@@ -1,0 +1,26 @@
+Manuel installation — PC Basic 8 Go
+
+Ce document détaille les étapes d'installation du PC Basic 8 Go fourni par SunuTech.
+
+1. Contenu de la boîte  
+   - Le boîtier PC  
+   - Une alimentation 500W  
+   - Une barrette RAM 8 Go  
+   - Un SSD 512 Go  
+   - Les câbles d'alimentation et visserie  
+
+2. Mise en route  
+   a) Branchez le câble d'alimentation et l'écran, le clavier.  
+   b) Allumez le PC avec le bouton power.  
+   c) Si aucun système d'exploitation n'est livré, insérez une clé USB bootable (Windows / Linux).  
+
+3. Installation des pilotes  
+   - Connectez-vous à Internet.  
+   - Téléchargez les pilotes (carte mère, GPU, etc.) depuis le site SunuTech.  
+   - Installez d'abord les pilotes chipset, puis GPU, puis périphériques.  
+
+4. Vérification finale  
+   - Ouvrez le Gestionnaire de périphériques pour vérifier les alertes.  
+   - Lancez un benchmark simple (ex : CrystalDiskMark, 3DMark) pour confirmer que les performances sont cohérentes.
+
+En cas de problème, contactez support@sunutech.ci avec les logs et spécifications système.

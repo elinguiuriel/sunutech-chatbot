@@ -1,0 +1,16 @@
+FAQ SunuTech — Questions fréquentes
+
+Q : Comment installer un SSD NVMe dans un PC acheté chez SunuTech ?
+R : Pour installer un SSD NVMe, suivez ces étapes :
+  1. Éteignez le PC et débranchez-le.
+  2. Ouvrez le boîtier et repérez la prise M.2 sur la carte mère.
+  3. Insérez le SSD à un angle de ~30°, poussez jusqu'à l'enclenchement, puis vissez la petite vis fournie.
+  4. Démarrez l'ordinateur, entrez dans le BIOS, activez le mode NVMe/PCIe si besoin.
+  5. Depuis le système d'exploitation, formatez et créez la partition.
+
+Q : Quelle est la durée de la garantie chez SunuTech ?
+R : Tous nos produits bénéficient d'une garantie constructeur de 24 mois. Vous pouvez demander une extension de garantie à l'achat.
+
+Q : Puis-je retourner un produit s'il ne me convient pas ?
+R : Oui, dans un délai de 30 jours après réception, sous réserve que le produit soit en état neuf.  
+  Contactez notre support avec votre numéro de commande pour lancer la procédure de retour.
