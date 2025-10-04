@@ -80,14 +80,14 @@ if st.button("Réinitialiser la conversation"):
     st.session_state.chat_state = {"messages": []}
     st.rerun()  # remplace experimental_rerun()
 
-# --- afficher tout l’historique une seule fois ---
+# --- afficher tout l'historique une seule fois ---
 render_messages_once(st.session_state.chat_state.get("messages", []))
 
 # --- entrée utilisateur ---
 if user_input := st.chat_input("Votre question…"):
     new_state = call_graph_with_input(user_input)
-    # n’affiche ici **que** le dernier message AI (ou nouveau message)
-    # pour éviter doublons, on ne réaffiche pas tout l’historique
+    # n'affiche ici **que** le dernier message AI (ou nouveau message)
+    # pour éviter doublons, on ne réaffiche pas tout l'historique
     last_msg = new_state.get(
         "messages", [])[-1] if new_state.get("messages") else None
     if isinstance(last_msg, AIMessage):

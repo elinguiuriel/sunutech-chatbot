@@ -41,10 +41,10 @@ def call_graph_with_input(user_text: str) -> dict:
     st_state["user_query"] = user_text
 
     try:
-        with st.spinner("L’agent réfléchit…"):
+        with st.spinner("L'agent réfléchit…"):
             new_state = GRAPH.invoke(st_state)
     except Exception as e:
-        st.error(f"Erreur pendant l’inférence : {e}")
+        st.error(f"Erreur pendant l'inférence : {e}")
         st.code(traceback.format_exc())
         return st_state
 
@@ -56,7 +56,7 @@ def call_graph_with_input(user_text: str) -> dict:
     return new_state
 
 def render_full_chat(msgs: list[Any]):
-    """Affiche la totalité des messages dans l’ordre."""
+    """Affiche la totalité des messages dans l'ordre."""
     with chat_container:
         for msg in msgs:
             if isinstance(msg, HumanMessage):
@@ -75,16 +75,16 @@ if st.button("Réinitialiser la conversation"):
     st.session_state.chat_state = {"messages": []}
     st.rerun() 
 
-# Affichage de l’historique actuel
+# Affichage de l'historique actuel
 render_full_chat(st.session_state.chat_state.get("messages", []))
 
 # Zone de saisie utilisateur
 if user_input := st.chat_input("Votre question…"):
     new_state = call_graph_with_input(user_input)
-    # On a déjà ajouté le message utilisateur et la réponse IA dans l’état
+    # On a déjà ajouté le message utilisateur et la réponse IA dans l'état
     # On peut juste **afficher la dernière paire message-utilisateur + réponse IA**
     # pour éviter de tout re-rendre (bien que render_full_chat ci-dessus ait déjà tout affiché).
-    # Ici on n’a pas besoin d’appeler render_full_chat de nouveau car l’état mis à jour est visible.
+    # Ici on n'a pas besoin d'appeler render_full_chat de nouveau car l'état mis à jour est visible.
 
     # (Optionnel) Si tu veux afficher uniquement le nouveau message IA :
     last = new_state.get("messages", [])[-1]

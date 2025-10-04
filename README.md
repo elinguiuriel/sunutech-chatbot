@@ -3,11 +3,13 @@
 Un agent conversationnel **multi-rôles** développé pour **SunuTech**, capable de gérer le **support client**, la **vente** et la **gestion de commandes**.  
 Il combine **IA générative**, **RAG (Retrieval-Augmented Generation)** et une **base SQLite** pour offrir une expérience fluide et intelligente.
 
+
+
 ---
 
 ## 🚀 Fonctionnalités
 
-- 🔍 **Détection d’intentions** : Support, Vente, Commande, Salutation, Remerciement, Au revoir, Escalade.  
+- 🔍 **Détection d'intentions** : Support, Vente, Commande, Salutation, Remerciement, Au revoir, Escalade.  
 - 💬 **Support client** : réponses issues de la documentation locale (RAG avec FAISS + embeddings OpenAI).  
 - 🛒 **Agent commercial** : vérification des prix et du stock produits.  
 - 📦 **Agent commande** : création, suivi et mise à jour des commandes clients.  
@@ -38,11 +40,11 @@ Il combine **IA générative**, **RAG (Retrieval-Augmented Generation)** et une 
 ├── agent_graph.py        # Orchestration LangGraph (agents multi-rôles)
 ├── rag_system.py         # Système RAG (chargement docs + index FAISS)
 ├── tools.py              # Outils métiers (inventaire, commandes, statuts)
-├── setup_db.py           # Script de création et d’alimentation de la DB
+├── setup_db.py           # Script de création et d'alimentation de la DB
 ├── donnees/              # Dossier des fichiers utilisés pour le RAG (.txt / .pdf)
 ├── images/
-│   └── screenshot1.png   # Capture d’écran de l’interface Streamlit
-├── USAGE.md              # Exemples d’usage complets
+│   └── screenshot1.png   # Capture d'écran de l'interface Streamlit
+├── USAGE.md              # Exemples d'usage complets
 ├── requirements.txt      # Dépendances Python
 └── README.md
 
@@ -105,7 +107,7 @@ export OPENAI_API_KEY="ta_cle_api_openai"
 setx OPENAI_API_KEY "ta_cle_api_openai"
 ```
 
-> ⚠️ Redémarre ton terminal après l’exécution de `setx` pour que la variable soit prise en compte.
+> ⚠️ Redémarre ton terminal après l'exécution de `setx` pour que la variable soit prise en compte.
 
 ---
 
@@ -128,7 +130,7 @@ Ils seront automatiquement chargés et indexés par le module `rag_system.py` po
 
 ---
 
-## ▶️ Lancement de l’application
+## ▶️ Lancement de l'application
 
 Démarre le chatbot :
 
@@ -142,13 +144,13 @@ Puis ouvre ton navigateur sur :
 
 ---
 
-## 🧪 Exemples d’utilisation
+## 🧪 Exemples d'utilisation
 
 Les scénarios détaillés (support, vente, commande, statut, etc.) sont disponibles dans le fichier [USAGE.md](./USAGE.md).
 
 Exemples rapides :
 
-| Type d’intention    | Exemple de question                                |
+| Type d'intention    | Exemple de question                                |
 | ------------------- | -------------------------------------------------- |
 | **Support**         | “Comment installer un SSD NVMe ?”                  |
 | **Vente**           | “Quels ordinateurs portables avez-vous en stock ?” |
@@ -160,9 +162,9 @@ Exemples rapides :
 
 ---
 
-## 🖼️ Capture d’écran
+## 🖼️ Capture d'écran
 
-Un aperçu de l’interface utilisateur :
+Un aperçu de l'interface utilisateur :
 
 ![Interface SunuTech Chatbot](images/screenshot1.png)
 
@@ -207,5 +209,5 @@ Pour proposer une amélioration :
 
 ## 📜 Licence
 
-Projet développé par **SunuTech** — Tous droits réservés.
-Usage autorisé à des fins d’étude, démonstration ou formation.
+Projet développé par **ELINGUI Pascal Uriel** — Tous droits réservés.
+Usage autorisé à des fins d'étude, démonstration ou formation.

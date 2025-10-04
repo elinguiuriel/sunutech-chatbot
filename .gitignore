@@ -214,3 +214,6 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+sunutech_db.sqlite
+sunutech_db.sqlite

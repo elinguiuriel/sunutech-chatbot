@@ -1,294 +1,338 @@
-# scénarios de test du chatbot sunutech
+# 📗 USAGE — Scénarios de test du chatbot SunuTech
 
-## A) démarrage & santé du système
+Ce document propose des scénarios pour valider pas à pas le chatbot **SunuTech** (support, vente, commande, statut, RAG, robustesse).  
+Il tient compte des dernières évolutions : intentions basiques (salutation / remerciement / au revoir), outils métiers `list_products`, `check_product_inventory(product_name)`, `create_order(order_details)`, `get_order_status(order_id)` et corrections Streamlit.
 
-1. **vérification de base**
-
-* **pré-requis** : exécuter `python setup_db.py`
-* **question** : `Peux-tu m'aider ?`
-* **attendu** : une réponse générique (agent handover ou support selon tes docs RAG). Pas d'erreur dans l'UI.
-
-2. **absence de documents RAG**
-
-* **pré-requis** : dossier `donnees/` vide ou manquant
-* **question** : `Explique-moi le fonctionnement du chatbot SunuTech.`
-* **attendu** : soit une réponse sans contexte RAG, soit un warning dans les logs côté serveur, mais **pas de crash UI**.
+> ✅ **Prérequis généraux**
+>
+> 1) Avoir un fichier `.env` avec `OPENAI_API_KEY`.  
+> 2) Initialiser la base: `python setup_db.py` → crée `sunutech_db.sqlite` et 10 produits.  
+> 3) Lancer l’app: `streamlit run app.py`.  
+> 4) (Optionnel) Ajouter des `.txt` / `.pdf` dans `donnees/` pour enrichir le RAG.  
+> 5) Sous Windows, active bien l’environnement: `.\venv\Scripts\activate`.
 
 ---
 
-## B) support (FAQ / technique) — intention « SUPPORT »
+## A) Démarrage & santé du système
 
-3. **question générique de support**
+1. **Vérification de base**
 
-* **question** : `Comment fonctionnent les embeddings et FAISS dans votre chatbot ?`
-* **attendu** : réponse explicative utilisant le contexte RAG si présent (référence aux embeddings OpenAI et à FAISS).
+- **Pré-requis** : `python setup_db.py`
+- **Question** : `Peux-tu m'aider ?`
+- **Attendu** : une réponse générique (support ou handover selon les docs RAG). **Aucune erreur UI**.
 
-4. **question précise issue des docs**
+2. **Absence de documents RAG**
 
-* **pré-requis** : mettre un .txt dans `donnees/` décrivant, par ex., “comment réindexer la base FAISS”.
-* **question** : `Comment je réindexe la base de connaissances ?`
-* **attendu** : réponse citant les étapes décrites dans le .txt (signes que le RAG a bien été utilisé).
-
-5. **terme métier (support produit)**
-
-* **question** : `Le SSD NVMe est-il compatible avec un PC de bureau classique ?`
-* **attendu** : explication courte ; **pas** d'appel outil (sauf si la question dérive vers stock/prix).
+- **Pré-requis** : `donnees/` vide ou manquant
+- **Question** : `Explique-moi le fonctionnement du chatbot SunuTech.`
+- **Attendu** : réponse sans contexte RAG (ou warning côté logs), **pas de crash UI**.
 
 ---
 
-## C) vente / disponibilité — intention « VENTE » (outil `check_product_inventory`)
+## B) Support (FAQ / technique) — intention « SUPPORT »
 
-6. **inventaire simple par mot-clé**
+3. **Question générique de support**
 
-* **question** : `Avez-vous des SSD disponibles ?`
-* **attendu** : le bot déclenche `check_product_inventory("SSD")` et **affiche** quelque chose comme :
+- **Question** : `Comment fonctionnent les embeddings et FAISS dans votre chatbot ?`
+- **Attendu** : explication (si RAG présent, référence à embeddings OpenAI + FAISS).
 
-  ```
-  4: SSD 1To NVMe
-    Description : Disque SSD NVMe 1 To haute vitesse
-    Prix : 100.00 €
-    Stock : 20
+4. **Question précise issue des docs**
 
-  5: SSD 2To NVMe
-    Description : Disque SSD NVMe 2 To
-    Prix : 180.00 €
-    Stock : 10
-  ```
+- **Pré-requis** : `.txt` dans `donnees/` décrivant “réindexer FAISS”
+- **Question** : `Comment je réindexe la base de connaissances ?`
+- **Attendu** : étapes du `.txt` (preuve que le RAG est utilisé).
 
-7. **inventaire sur produit RAM**
+5. **Terme métier (support produit)**
 
-* **question** : `Je cherche de la RAM 16 Go`
-* **attendu** : retour détaillé pour “RAM 16 Go DDR4” (prix 60.00 €, stock 25).
-
-8. **aucun match**
-
-* **question** : `Avez-vous des cartes mères X570 ?`
-* **attendu** :
-
-  ```
-  Aucun produit trouvé pour « cartes mères X570 ».
-  ```
-
-9. **prix & stock d'un écran**
-
-* **question** : `Quel est le prix et le stock du moniteur 27"`
-* **attendu** :
-
-  ```
-  8: Moniteur 27" 144Hz
-    Description : Moniteur 27 pouces, rafraîchissement 144 Hz
-    Prix : 300.00 €
-    Stock : 8
-  ```
+- **Question** : `Le SSD NVMe est-il compatible avec un PC de bureau classique ?`
+- **Attendu** : explication courte ; **pas** d’appel outil (sauf dérive vers prix/stock).
 
 ---
 
-## D) catalogue global — outil `list_products`
+## C) Vente / disponibilité — intention « VENTE » (outil `check_product_inventory`)
 
-10. **liste complète**
+6. **Inventaire simple par mot-clé**
 
-* **question** : `Montre-moi tous les produits disponibles`
-* **attendu** : appel `list_products` → lignes du type :
+- **Question** : `Avez-vous des SSD disponibles ?`
+- **Attendu** : appel `check_product_inventory("SSD")` et affichage, ex. :
 
-  ```
-  1: PC Basic 8 Go — 250.00 € — stock : 15
-  2: PC Gamer RTX — 1200.00 € — stock : 5
-  ...
-  10: Souris Gaming — 70.00 € — stock : 30
-  ```
+```
 
----
+4: SSD 1To NVMe
+Description : Disque SSD NVMe 1 To haute vitesse
+Prix : 100.00 €
+Stock : 20
 
-## E) commande — intention « COMMANDE » (outil `create_order`)
+5: SSD 2To NVMe
+Description : Disque SSD NVMe 2 To
+Prix : 180.00 €
+Stock : 10
 
-> ton agent est “incité” à renvoyer un JSON d'outil. Le code parse la réponse et appelle `create_order`, puis **affiche** le message de retour de l'outil (avec un checkmark dans la chaîne).
+```
 
-11. **commande valide (1 article)**
+7. **Inventaire RAM**
 
-* **question** : `Je veux commander 2 SSD 1To NVMe au nom de Jean Dupont, j'habite Abidjan et mon email est jean@example.com.`
-* **attendu** : l'agent produit un JSON outil, le code appelle `create_order`, puis **réponse finale** ressemblant à :
+- **Question** : `Je cherche de la RAM 16 Go`
+- **Attendu** : retour détaillé “RAM 16 Go DDR4” (≈ 60.00 €, stock ≈ 25).
 
-  ```
-  ✅ Commande créée avec succès. ID de commande : <nombre>.
-  Montant total : 200.00 €.
-  Vous recevrez bientôt un email de confirmation.
-  ```
+8. **Aucun match**
 
-  (Le stock du produit 4 passe de 20 à 18.)
+- **Question** : `Avez-vous des cartes mères X570 ?`
+- **Attendu** :
 
-12. **commande multi-articles**
+```
 
-* **question** : `Je prends 1 PC Basic 8 Go et 1 Moniteur 27". Nom : Fatou Diop, email : fatou@example.com, adresse : Dakar.`
-* **attendu** :
+Aucun produit trouvé pour « cartes mères X570 ».
 
-  ```
-  ✅ Commande créée avec succès. ID de commande : <nombre>.
-  Montant total : 550.00 €.
-  Vous recevrez bientôt un email de confirmation.
-  ```
+```
 
-  (Stocks mis à jour : PC Basic 8 Go → 14 ; Moniteur → 7)
+9. **Prix & stock écran**
 
-13. **stock insuffisant**
+- **Question** : `Quel est le prix et le stock du moniteur 27"`
+- **Attendu** :
 
-* **question** : `Je veux 50 Claviers Mécaniques.`
-* **attendu** : message d'erreur de l'outil :
+```
 
-  ```
-  Pas assez de stock pour le produit ID <id>. Disponible : 30, demandé : 50
-  ```
+8: Moniteur 27" 144Hz
+Description : Moniteur 27 pouces, rafraîchissement 144 Hz
+Prix : 300.00 €
+Stock : 8
 
-14. **produit inexistant**
-
-* **question** : `Commander 1 produit avec l'ID 9999`
-* **attendu** :
-
-  ```
-  Produit ID 9999 non trouvé.
-  ```
-
-15. **payload invalide deviné par l'agent**
-
-* **question** : `Crée une commande mais je ne sais pas quoi acheter.`
-* **attendu** : réponse textuelle (pas d'appel outil) expliquant qu'il faut des items ou redirige vers la liste des produits.
+```
 
 ---
 
-## F) suivi de commande — intention « COMMANDE » (outil `get_order_status`)
+## D) Catalogue global — outil `list_products`
 
-16. **statut commande existante**
+10. **Liste complète**
 
-* **pré-requis** : avoir créé au moins 1 commande via scénarios 11/12
-* **question** : `Quel est le statut de la commande 1 ?`
-* **attendu** :
+- **Question** : `Montre-moi tous les produits disponibles`
+- **Attendu** : appel `list_products()` → lignes du type :
 
-  ```
-  Commande ID 1
-  Client : <nom>
-  Montant : <montant> €
-  Statut : PENDING
-  ```
+```
 
-17. **commande inexistante**
+1: PC Basic 8 Go — 250.00 € — stock : 15
+2: PC Gamer RTX — 1200.00 € — stock : 5
+...
+10: Souris Gaming — 70.00 € — stock : 30
 
-* **question** : `Peux-tu vérifier la commande 9999 ?`
-* **attendu** :
-
-  ```
-  Aucune commande trouvée pour l'ID 9999.
-  ```
+```
 
 ---
 
-## G) RAG (recherche documentaire) — qualité des réponses
+## E) Commande — intention « COMMANDE » (outil `create_order`)
 
-18. **question couverte par un PDF**
+> L’agent est “incité” à renvoyer un JSON outil. Le code parse et appelle `create_order({"order_details": {...}})`, puis **affiche** le message de l’outil.
 
-* **pré-requis** : un PDF dans `donnees/` décrivant “politique de retour produit”
-* **question** : `Quelle est votre politique de retour produit ?`
-* **attendu** : réponse synthétisant fidèlement le document.
+11. **Commande valide (1 article)**
 
-19. **question hors périmètre documentation**
+- **Question** :  
+`Je veux commander 2 SSD 1To NVMe au nom de Jean Dupont, j'habite Abidjan et mon email est jean@example.com.`
+- **Attendu** :
 
-* **question** : `Comment modifier le code source de FAISS ?`
-* **attendu** : réponse générale (sans hallucinations), ou proposition d'escalade (handover).
+```
 
----
+✅ Commande créée avec succès. ID de commande : <nombre>.
+Montant total : 200.00 €.
+Vous recevrez bientôt un email de confirmation.
 
-## H) désambiguïsation & robustesse
+```
 
-20. **intention ambiguë (vente vs support)**
+(Le stock du SSD 1To passe de 20 à 18.)
 
-* **question** : `Le PC Gamer RTX est-il bien ventilé et quel est son prix ?`
-* **attendu** : réponse mêlant explication + appel `check_product_inventory("PC Gamer RTX")` pour donner le prix/stock.
+12. **Commande multi-articles**
 
-21. **fautes de frappe**
+- **Question** :  
+`Je prends 1 PC Basic 8 Go et 1 Moniteur 27". Nom : Fatou Diop, email : fatou@example.com, adresse : Dakar.`
+- **Attendu** :
 
-* **question** : `Avez-vous des ‘barrete memoire 16 go' ?`
-* **attendu** : tolérance à la faute → `check_product_inventory("16 Go")` renvoie “RAM 16 Go DDR4”.
+```
 
-22. **langue mixte**
+✅ Commande créée avec succès. ID de commande : <nombre>.
+Montant total : 550.00 €.
+Vous recevrez bientôt un email de confirmation.
 
-* **question** : `Do you have a 2TB SSD in stock?`
-* **attendu** : réponse en anglais ou français mais correcte, avec inventaire “SSD 2To NVMe”.
+```
 
-23. **requête trop vague**
+(Stocks mis à jour : PC Basic 8 Go → 14 ; Moniteur → 7)
 
-* **question** : `Je veux acheter quelque chose.`
-* **attendu** : le bot propose la liste des produits ou pose une question de clarification.
+13. **Stock insuffisant**
 
-24. **contexte conversationnel**
+- **Question** : `Je veux 50 Claviers Mécaniques.`
+- **Attendu** :
 
-* **enchaînement** :
+```
 
-  * `Je cherche un SSD.` → affichage des SSD
-  * `Le 2 To m'intéresse, quel est son prix ?`
-* **attendu** : le bot comprend que “2 To” fait référence au précédent : `180.00 € — stock : 10`.
+Pas assez de stock pour le produit ID <id>. Disponible : 30, demandé : 50
 
----
+```
 
-## I) erreurs contrôlées (grâce au try/except côté UI)
+14. **Produit inexistant**
 
-25. **pas de clé API**
+- **Question** : `Commander 1 produit avec l'ID 9999`
+- **Attendu** :
 
-* **pré-requis** : unset `OPENAI_API_KEY`
-* **question** : `Bonjour`
-* **attendu** : **affichage d'une erreur** côté UI (grâce au try/except), pas un silence.
+```
 
-26. **base SQLite manquante**
+Produit ID 9999 non trouvé.
 
-* **pré-requis** : supprimer `sunutech_db.sqlite`
-* **question** : `Montre-moi tous les produits`
-* **attendu** : message d'erreur outil dans la réponse :
+```
 
-  ```
-  Erreur dans list_products : Base de données non trouvée : sunutech_db.sqlite
-  ```
+15. **Payload invalide deviné par l’agent**
+
+- **Question** : `Crée une commande mais je ne sais pas quoi acheter.`
+- **Attendu** : réponse textuelle (pas d’appel outil) expliquant qu’il faut des *items* ou renvoyant vers `list_products`.
 
 ---
 
-## J) sécurité & confidentialité
+## F) Suivi de commande — intention « COMMANDE » (outil `get_order_status`)
 
-27. **données personnelles dans la requête**
+16. **Statut commande existante**
 
-* **question** : `Voici mon numéro de carte bancaire 1234..., peux-tu créer la commande ?`
-* **attendu** : le bot doit **refuser de stocker des données sensibles**, répondre de façon prudente (pas d'insertion en base de ces infos).
+- **Pré-requis** : avoir créé ≥ 1 commande (scénarios 11/12)
+- **Question** : `Quel est le statut de la commande 1 ?`
+- **Attendu** :
 
-28. **demande hors périmètre (juridique / médical)**
+```
 
-* **question** : `Donne-moi un avis juridique détaillé sur la garantie légale en Europe.`
-* **attendu** : réponse très prudente + suggestion de consulter un expert (handover).
+Commande ID 1
+Client : <nom>
+Montant : <montant> €
+Statut : PENDING
+
+```
+
+17. **Commande inexistante**
+
+- **Question** : `Peux-tu vérifier la commande 9999 ?`
+- **Attendu** :
+
+```
+
+Aucune commande trouvée pour l'ID 9999.
+
+```
 
 ---
 
-## K) performance & UX
+## G) RAG (recherche documentaire)
 
-29. **latence acceptable**
+18. **Question couverte par un PDF**
 
-* **question** : `Liste des produits`
-* **attendu** : réponse en moins de quelques secondes (selon connexion). Aucune duplication de messages.
+- **Pré-requis** : PDF “politique de retour produit” dans `donnees/`
+- **Question** : `Quelle est votre politique de retour produit ?`
+- **Attendu** : synthèse fidèle au document (pas d’hallucinations).
 
-30. **réinitialisation session**
+19. **Question hors périmètre documentation**
 
-* **action** : cliquer sur **Réinitialiser la conversation**, puis poser une nouvelle question.
-* **attendu** : historique vidé, pas d'ancienne mémoire dans les réponses.
+- **Question** : `Comment modifier le code source de FAISS ?`
+- **Attendu** : réponse prudente / générale ou proposition d’escalade (handover).
 
 ---
 
-## bonus : jeux de prompts “clé en main”
+## H) Désambiguïsation & robustesse
 
-* **vente rapide** :
+20. **Intention ambiguë (vente vs support)**
 
-  > `Je veux un SSD NVMe pour un usage bureautique, c'est quoi le meilleur rapport qualité/prix ?`
-  > **attendu** : recommande 1 To à 100 €, propose de passer commande.
+- **Question** : `Le PC Gamer RTX est-il bien ventilé et quel est son prix ?`
+- **Attendu** : explication + appel `check_product_inventory("PC Gamer RTX")` pour prix/stock.
 
-* **commande structurée** :
+21. **Fautes de frappe**
 
-  > `Crée une commande pour 1 "PC Basic 8 Go" et 1 "Souris Gaming". Nom: Yao Kouadio, email: yao@ex.com, adresse: Cocody.`
-  > **attendu** : message “Commande créée…” + montant `320.00 €`, stocks décrémentés.
+- **Question** : `Avez-vous des ‘barrete memoire 16 go' ?`
+- **Attendu** : tolérance → `check_product_inventory("16 Go")` renvoie la RAM 16 Go.
 
-* **support RAG** :
+22. **Langue mixte**
 
-  > `Explique-moi la différence entre RAG et fine-tuning, d'après votre documentation.`
-  > **attendu** : synthèse fidèle aux documents.
+- **Question** : `Do you have a 2TB SSD in stock?`
+- **Attendu** : réponse correcte (FR/EN), inventaire “SSD 2To NVMe”.
 
+23. **Requête trop vague**
+
+- **Question** : `Je veux acheter quelque chose.`
+- **Attendu** : proposition `list_products()` ou question de clarification.
+
+24. **Contexte conversationnel**
+
+- **Enchaînement** :  
+`Je cherche un SSD.` → affiche SSD  
+`Le 2 To m'intéresse, quel est son prix ?`
+- **Attendu** : comprend la référence → `180.00 € — stock : 10`.
+
+---
+
+## I) Erreurs contrôlées (UI protégée par try/except)
+
+25. **Pas de clé API**
+
+- **Pré-requis** : `OPENAI_API_KEY` non défini
+- **Question** : `Bonjour`
+- **Attendu** : **Erreur visible** côté UI (alerte), pas de blocage silencieux.
+
+26. **Base SQLite manquante**
+
+- **Pré-requis** : supprimer `sunutech_db.sqlite`
+- **Question** : `Montre-moi tous les produits`
+- **Attendu** :
+
+```
+
+Erreur dans list_products : Base de données non trouvée : sunutech_db.sqlite
+
+```
+
+---
+
+## J) Sécurité & confidentialité
+
+27. **Données sensibles**
+
+- **Question** : `Voici mon numéro de carte bancaire 1234..., peux-tu créer la commande ?`
+- **Attendu** : **Refus** de stocker des données sensibles, message prudent (pas d’insertion en base).
+
+28. **Demande hors périmètre (juridique / médical)**
+
+- **Question** : `Donne-moi un avis juridique détaillé sur la garantie légale en Europe.`
+- **Attendu** : prudence + suggestion d’expert (handover).
+
+---
+
+## K) Performance & UX
+
+29. **Latence acceptable**
+
+- **Question** : `Liste des produits`
+- **Attendu** : réponse rapide (quelques secondes). **Aucune duplication** (l’app affiche les messages dans l’ordre: utilisateur → IA).
+
+30. **Réinitialisation session**
+
+- **Action** : cliquer **Réinitialiser la conversation**, puis poser une question.
+- **Attendu** : historique vidé, pas de “mémoire résiduelle”.
+
+---
+
+## Bonus : Jeux de prompts “clé en main”
+
+- **Vente rapide**  
+`Je veux un SSD NVMe pour un usage bureautique, c'est quoi le meilleur rapport qualité/prix ?`  
+**Attendu** : recommande 1 To à 100 €, propose de passer commande.
+
+- **Commande structurée**  
+`Crée une commande pour 1 "PC Basic 8 Go" et 1 "Souris Gaming". Nom: Yao Kouadio, email: yao@ex.com, adresse: Cocody.`  
+**Attendu** : “Commande créée…” + montant `320.00 €`, stocks décrémentés.
+
+- **Support RAG**  
+`Explique-moi la différence entre RAG et fine-tuning, d'après votre documentation.`  
+**Attendu** : synthèse fidèle aux documents.
+
+---
+
+### Notes techniques utiles
+
+- **Accolades dans les prompts** : toujours **doubler** `{{` et `}}` pour afficher du JSON littéral dans les `ChatPromptTemplate`.  
+- **Appels d’outils `@tool`** : passer un **dict** avec les bons noms de paramètres :  
+- `check_product_inventory({"product_name": "SSD"})`  
+- `create_order({"order_details": {...}})`  
+- `get_order_status({"order_id": 1})`  
+- `list_products()` (sans argument)  
+- **Streamlit** : pour réinitialiser, utiliser **`st.rerun()`** (et non `st.experimental_rerun()`).
